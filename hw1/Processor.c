@@ -56,7 +56,7 @@ float num_ratio(int *arr, int size)
     {
         if ((arr[i] % 2) != 0)
         {
-            ocount = ocount + 1;
+            ocount++;
         }
     }
     float ecount = size - ocount;
@@ -104,8 +104,7 @@ double get_running_ratio()
     for (int i = 0; i < numIter; i++)
     {
         int sizeArray = get_arr_size(rand());
-        int *arr;
-        arr = (int *)malloc(sizeArray);
+        int *arr = malloc(sizeArray);
         if (maxSize < sizeArray)
         {
             maxSize = sizeArray;
@@ -115,7 +114,7 @@ double get_running_ratio()
             *(arr + j) = get_arr_val(rand());
         }
         ratioSum += num_ratio(arr, sizeArray);
-        //free(arr);
+        free(arr);
     }
     double aRatio = ratioSum / numIter;
     printf("[Processor]: Largest array size is %i\n", maxSize * 4);
