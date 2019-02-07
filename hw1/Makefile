@@ -1,6 +1,7 @@
 CC=gcc
 FILES=Starter.c Processor.c
 OUT_EXE = Starter
+name = "AlyAmmarHW1"
 build: $(FILES)
 	$(CC) -o $(OUT_EXE) $(FILES)
 clean:

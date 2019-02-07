@@ -4,7 +4,7 @@ README
 A. This package includes the following files. In your own readme file, modify the information as needed.
 
 |-- Starter.c [This is the driver program which will be used to invoke the get_running_ratio.]
-|-- Processor.c [Skeleton version, in which you have to fill in the missing code.]
+|-- Processor.c [Implementation of the method for calculating the running ratio along with helper methods.]
 |-- Processor.h [Header file declaring the function exposed from Processor.c]
 |-- README.txt [This file]
 
