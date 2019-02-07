@@ -97,14 +97,14 @@ double get_running_ratio()
      */
 
     /* Write your code in here */
-    int maxSize;
+    int maxSize = 0;
     float ratioSum = 0;
     int numIter = get_iteration_count(rand());
     printf("[Processor]: Number of iterations is %i\n", numIter);
     for (int i = 0; i < numIter; i++)
     {
         int sizeArray = get_arr_size(rand());
-        int *arr = malloc(sizeArray);
+        int *arr = (int *)malloc(sizeof(int) * sizeArray);
         if (maxSize < sizeArray)
         {
             maxSize = sizeArray;

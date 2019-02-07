@@ -33,11 +33,45 @@ where you have to pass your first name and last name.
 C. Answer the following questions (1 point each, select/type the right answer).
 
 1. Malloc takes the number of bytes to be allocated as the argument? True/false
+True
 
 2. Not freeing the allocated memory throws a compilation error? True/false
+flase
 
-3. In which header file is malloc defined in?  ______  
+3. In which header file is malloc defined in?  ______ 
+stdlib
 
 4. In makefile the default target is always the ______ target. 
+build
 
 5. Which symbol/sign is used in a makefile to use the value stored in particular variable? ______ 
+$
+
+D. Valgrind output for memory leak:
+
+==149== Memcheck, a memory error detector
+==149== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==149== Using Valgrind-3.12.0.SVN and LibVEX; rerun with -h for copyright info
+==149== Command: ./Starter 1256
+==149==
+==149== error calling PR_SET_PTRACER, vgdb might block
+[Starter]: With seed: 1256
+[Processor]: Number of iterations is 113
+[Processor]: Largest array size is 796
+[Starter]: Running ratio: 1.014324
+
+==149==
+==149== HEAP SUMMARY:
+==149==     in use at exit: 67,696 bytes in 113 blocks
+==149==   total heap usage: 114 allocs, 1 frees, 68,208 bytes allocated
+==149==
+==149== LEAK SUMMARY:
+==149==    definitely lost: 67,696 bytes in 113 blocks
+==149==    indirectly lost: 0 bytes in 0 blocks
+==149==      possibly lost: 0 bytes in 0 blocks
+==149==    still reachable: 0 bytes in 0 blocks
+==149==         suppressed: 0 bytes in 0 blocks
+==149== Rerun with --leak-check=full to see details of leaked memory
+==149==
+==149== For counts of detected and suppressed errors, rerun with: -v
+==149== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
