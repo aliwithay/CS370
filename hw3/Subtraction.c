@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <errno.h>
 
 int main(int argc, char **argv)
 {
@@ -10,26 +14,22 @@ int main(int argc, char **argv)
    * Print the name of the program along with the process Id.
    * return status following the scheme given in the detailed assignment.
   */
-    printf("Subtraction: Child Process [%d]\n", getpid());
+    printf("Subtraction: Child Process [%d]\n\n", getpid());
     int dif = atoi(argv[1]);
     for (int i = 2; i < argc - 1; i++)
     {
         dif -= atoi(argv[i]);
     }
-    if (dif > 0)
-    {
-        return (1);
-    }
-    else if (dif < 0)
-    {
-        return (2);
-    }
-    else if (dif == 0)
-    {
-        return (0);
-    }
-    else
-    {
-        return (3);
-    }
+int shm_fd = shm_open(argv[3], O_CREAT | O_RDWR, 0666);
+if (shm_fd == -1)
+{
+        int errNum = errno;
+        printf("Addition: Shared memory creation failed. %s!\n", strerror(errNum));
+        return 3;
+}
+int size = 256;
+void *shmPtr = (int *)mmap(0, size, PROT_READ, MAP_SHARED, shm_fd, 0);
+sprintf(shmPtr, "%d", dif);
+shm_unlink(argv[3]);
+return 0;
 }
