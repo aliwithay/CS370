@@ -24,7 +24,7 @@ LD_FLAGS = -std=gnu99 -g  -Wall -I -lrt.
 .c.o:
 	$(GCC) $(GCC_FLAGS) $<
 #Target is the executable
-build: Starter Addition Subtraction Multiplication Division
+build: Starter Addition Subtraction Multiplication Division FileReader
 Starter: Starter.o
 	$(GCC) $(LD_FLAGS) Starter.o -o $(EXE)
 Addition: Addition.o
@@ -36,7 +36,7 @@ Multiplication: Multiplication.o
 Division: Division.o
 	$(GCC) $(LD_FLAGS) Division.o -o $(EXE4)
 FileReader: FileReader.o
-	$(GCC) $(LD_FLAGS) Division.o -o $(EXE5)
+	$(GCC) $(LD_FLAGS) FileReader.o -o $(EXE5)
 
 #Recompile C objects if headers change
 $(C_OBJS): ${C_HEADERS}

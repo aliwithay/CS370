@@ -1,10 +1,10 @@
 CC=gcc
 FILES=Starter.c Processor.c
 OUT_EXE = Starter
-name = "AlyAmmarHW1"
+assignment = Aly-Ammar-HW1
 build: $(FILES)
 	$(CC) -o $(OUT_EXE) $(FILES)
 clean:
 	rm -f $(OUT_EXE)
 package:
-	tar --ignore-failed-read --warning=no-failed-read -cvzf $(name) *.c *.h *.txt Makefile
+	tar -cv $(MAKEFILE_LIST) Starter.c Processor.c Processor.h  Makefile README.txt >$(assignment).tar

@@ -164,8 +164,8 @@ int main(int argc, char **argv)
       }
    }
    */
+   int numOp;
    char *fileName = "numbers.txt";
-   char str[255];
    if (argc > 1)
    {
       fileName = argv[1];
@@ -183,6 +183,7 @@ int main(int argc, char **argv)
    int pid = fork();
    if (pid == 0)
    {
+      close(fd[0]);
       execlp("./FileReader", "FileReader", fileName, buf, NULL);
    }
    else if (pid > 0)
@@ -193,7 +194,8 @@ int main(int argc, char **argv)
       int waitStatus;
       wait(&waitStatus);
       int result = WEXITSTATUS(waitStatus);
-      if (result != 0)
+      numOp = result;
+      if (result == 0)
       {
          return 1;
       }
@@ -206,31 +208,20 @@ int main(int argc, char **argv)
       return 2;
    }
    close(fd[1]);
-   char r;
-   int j = 0;
-   while (read(fd[0], &r, 1) > 0)
-   {
-      str[j++] = r;
-   }
+   char r[256] = "";
+   read(fd[0], r, sizeof(r)) ;
    close(fd[0]);
-   printf("Operations are %s\n\n", str);
-   char *sets[1];
-   char *set;
-   set = strtok(str, "\n");
-   int len = sizeof(sets) - 1;
-   while (set != NULL)
+    printf("Operations are %s\n\n", r);
+   for (int i = 0; i < numOp; i++)
    {
-      sets[len++] = set;
-      set = strtok(NULL, "\n");
-   }
-   char *memNames[sizeof(sets)];
-   for (int i = 0; i < sizeof(sets); i++)
-   {
-      char *s = "";
-      sprintf(s, "%d", i);
-      memNames[i] = "Shared_mem";
-      strcat(memNames[i], s);
-      int shm_fd = shm_open(memNames[i], O_CREAT | O_RDWR, 0666);
+      char *s;
+      //sprintf(s, "%i", i);
+      s = "1";
+      char *memName = "Shared_mem";
+      strcat(memName, s);
+      printf("%s", memName);
+      fflush(stdout);
+      int shm_fd = shm_open(memName, O_CREAT | O_RDWR, 0666);
       if (shm_fd == -1)
       {
          int errNum = errno;
@@ -247,19 +238,20 @@ int main(int argc, char **argv)
       }
       //int *shmPtr = (int *)mmap(0, size, PROT_READ, MAP_SHARED, shm_fd, 0);
       char *ops[1];
-      char *op;
-      op = strtok(sets[i], "\n");
-      int len = sizeof(ops) - 1;
+      char *op = "";
+      op = strtok(r, " ");
+      int len = strlen(ops) - 1;
       while (op != NULL)
       {
          ops[len++] = op;
+         printf("%s", op);
          op = strtok(NULL, "\n");
       }
       //char *op = strtok(sets[i], " ");
       int pid = fork();
       if (pid == 0)
       {
-         execlp(ops[0], ops[0], ops[1], ops[2], memNames[i], NULL);
+         execlp(ops[0], ops[0], ops[1], ops[2], memName, NULL);
          /*
          switch (op[0])
          {
@@ -282,12 +274,12 @@ int main(int argc, char **argv)
       {
          int waitstatus;
          printf("Starter: forked process [%i] for %s operation.\n", pid, ops[0]);
-         printf("Starter: Name of shared memory is %s and FD is %i.\n", memNames[i], shm_fd);
+         printf("Starter: Name of shared memory is %s and FD is %i.\n", memName, shm_fd);
          printf("Starter: waiting for process [%i].\n\n", pid);
          int returnpid = waitpid(pid, &waitstatus, WCONTINUED);
          int result = WEXITSTATUS(waitstatus);
          printf(" Child process %i of type %s operated on %s and %s and returned %i.\n\n", returnpid, ops[0], ops[1], ops[2], result);
-         shm_unlink(memNames[i]);
+         shm_unlink(memName);
       }
       else
       {

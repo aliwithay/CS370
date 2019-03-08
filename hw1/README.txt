@@ -33,19 +33,19 @@ where you have to pass your first name and last name.
 C. Answer the following questions (1 point each, select/type the right answer).
 
 1. Malloc takes the number of bytes to be allocated as the argument? True/false
-True
+>True
 
 2. Not freeing the allocated memory throws a compilation error? True/false
-flase
+>Flase
 
 3. In which header file is malloc defined in?  ______ 
-stdlib
+>stdlib
 
 4. In makefile the default target is always the ______ target. 
-build
+>build
 
 5. Which symbol/sign is used in a makefile to use the value stored in particular variable? ______ 
-$
+>$
 
 D. Valgrind output for memory leak:
 

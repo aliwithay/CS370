@@ -6,14 +6,23 @@
 
 int main(int argc, char **argv)
 {
-    write_fd = atoi(argv[argc - 1]);
+    int write_fd = atoi(argv[2]);
+    int count = 0;
     FILE *in;
-    in = fopen(argv[0], "r");
+    in = fopen(argv[1], "r");
     if (in == NULL)
     {
         fprintf(stderr, "Can't open input file 'numbers.txt'!\n");
-        return 1;
+        return 0;
     }
-    write(write_fd, in, sizeof(in));
-    return 0;
+    char str[50];
+    while (fgets(str, 50, in) != NULL) {
+        if(str[strlen(str) - 1] == '\n') {
+            str[strlen(str) - 1] = ' ';
+        }
+        write(write_fd, str, strlen(str));
+        count++;
+    }
+    write(write_fd, "\0", 2);
+    return count;
 }
