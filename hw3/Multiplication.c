@@ -28,8 +28,11 @@ if (shm_fd == -1)
         return 3;
 }
 int size = 256;
-void *shmPtr = (int *)mmap(0, size, PROT_READ, MAP_SHARED, shm_fd, 0);
-sprintf(shmPtr, "%d", pro);
-shm_unlink(argv[3]);
-return 0;
+void *shmPtr;
+shmPtr = mmap(0, size, PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    char *operation = argv[0];
+    char *a = argv[1];
+    char *b = argv[2];
+    sprintf(shmPtr, "%s %s %s %d\n", operation, a, b, pro);
+    shm_unlink(argv[3]);
 }

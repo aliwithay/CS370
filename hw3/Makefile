@@ -9,7 +9,7 @@ EXE2 = Subtraction
 EXE3 = Multiplication
 EXE4 = Division
 EXE5 = FileReader
-name = AlyAmmarHW2.tar
+name = AlyAmmarHW3.tar
 
 #Compiler and loader commands and flags
 # -g : generates default debug info.

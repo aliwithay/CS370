@@ -30,12 +30,17 @@ Questions:
 
 1. What does pipe( ) do and what does it return?  (2 points)
 
-Answer:
+Answer: pipe() creates a unidirectional channel that allows for interprocess communication. It returns zero on success and -1 for an error.
 
 
 
 
 2. Name the function used to open a shared memory object? What are the possible oflag values. Give just a one-line description of each of the oflags value. (3 points).
 
-Answer:
+Answer: shm_open is used to open a shared memory object. O flages can be the following:
+	1. O_RDONLY: This opens the memory for read only operations.
+	2. O_RDWR: This allows for both read and write operations.
+	3. O_CREAT: This creates a new shared memory object if it doesnt already exist and link to the memory segment.
+	4. O_EXCL: Checks for the existence of a memory object with a given name and creates one if it does not.
+	5. O_TRUNC: reduces the size of a memory object that already exists, to zero.
 

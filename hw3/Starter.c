@@ -8,168 +8,23 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+//This is the driver program which is used to create a pipe, fork the FileReader, pass pipe fd to FileReader, parse the sets of operations and pair of numbers. Creates a shared memory for each set of operations, and forks corresponding mathematical process in parallel, and waits for all of them to complete and displays the result in the right format.
+
 int main(int argc, char **argv)
 {
-    
-    /* Skeleton Code
-     * Open file whose name maybe provided as command line argument. If name is not provided open "numbers.txt"
-     * Check if the file opened successfully. If not print the statement "File opening has failed. Ending program." and then exit the program.
-     * Extract two integers from the file
-     * Assume that there are only two numbers separated by space in a single line.
-     * Close the file
-     * 
-     * 
-     * Perform four operations (Addition, Subtraction, Multiplication, Division) using the following steps:
-     * For each operation, fork a child process.
-     * 1.If inside the Parent process display the following text
-     *      "Starter: forked process with ID *child_process_id*."
-     *      "Starter: waiting for process [*child_process_id*]."
-     *   Use wait() to wait for the child process to complete the execution. Pass address of waitstatus as parameter to wait()
-     *   Get the exit status of the child process using WEXITSTATUS() with the input parameter as waitstatus.
-     *   See https://www.geeksforgeeks.org/wait-system-call-c/ for more details on usage/examples
-     *   Print the following statement
-     *      "Starter: Child process *child_process_id* returned *status*"
-     * 2.If inside the Child process, invoke the corresponding operation program, *operation_file*.c using the function execlp
-     *      See man exec or man execlp for more information on usage/paramaters
-     * 3.If forking has failed, Print the following statement and exit the program.
-     *      "Starter: Child Process Creation failed. Exiting."
-     * Print the statement "Starter: Addition: _"
-     * Print the statement "Starter: Subtraction: _"
-     * Print the statement "Starter: Multiplication: _"
-     * Print the statement "Starter: Division: _" where the blank is the status.
-     *        if status is 1 replace blank by "Result Positive".
-     *        if status is 2 replace blank by "Result Negative".
-     *        if status is 0 replace blank by "Result Zero".
-     *        if status is 3 replace blank by "Result Undefined".
-     * if (argc == 1)
-     * {
-     *    char a[12];
-     *    char b[12];
-     *    FILE *in;
-     *    in = fopen("numbers_1.txt", "r");
-     *    if (in == NULL)
-     *    {
-     *        fprintf(stderr, "Can't open input file 'numbers.txt'!\n");
-     *        return 1;
-}
-fscanf(in, "%s %s", a, b);
-fclose(in);
-//int sum, dif, pro, quo;
-for (int i = 0; i < 4; i++)
-{
-int pid = fork();
-if (pid == 0)
-{
-switch (i)
-{
-    case 0:
-        execlp("./Addition", "Addition", a, b, NULL);
-        break;
-    case 1:
-        execlp("./Subtraction", "Subtraction", a, b, NULL);
-        break;
-    case 2:
-        execlp("./Multiplication", "Multiplication", a, b, NULL);
-        break;
-    case 3:
-        execlp("./Division", "Division", a, b, NULL);
-        break;
-}
-}
-else if (pid > 0)
-{
-int waitstatus;
-printf("Starter: forked process with ID %i \n", pid);
-printf("Starter: waiting for process [%i] \n", pid);
-wait(&waitstatus);
-int result = WEXITSTATUS(waitstatus);
-printf("Starter: Child proces %i returned %d \n", pid, result);
-if (i == 0)
-{
-switch (result)
-{
-    case 0:
-        printf("Starter: Addition: Result Zero\n");
-        break;
-    case 1:
-        printf("Starter: Addition: Result Positive\n");
-        break;
-    case 2:
-        printf("Starter: Addition: Result Negative\n");
-        break;
-    case 3:
-        printf("Starter: Addition: Result Undefined\n");
-        break;
-}
-}
-else if (i == 1)
-{
-switch (result)
-{
-    case 0:
-        printf("Starter: Subtraction: Result Zero\n");
-        break;
-    case 1:
-        printf("Starter: Subtraction: Result Positive\n");
-        break;
-    case 2:
-        printf("Starter: Subtraction: Result Negative\n");
-        break;
-    case 3:
-        printf("Starter: Subtraction: Result Undefined\n");
-        break;
-}
-}
-else if (i == 2)
-{
-switch (result)
-{
-    case 0:
-        printf("Starter: Multiplication: Result Zero\n");
-        break;
-    case 1:
-        printf("Starter: Multiplication: Result Positive\n");
-        break;
-    case 2:
-        printf("Starter: Multiplication: Result Negative\n");
-        break;
-    case 3:
-        printf("Starter: Multiplication: Result Undefined\n");
-        break;
-}
-}
-else
-{
-switch (result)
-{
-    case 0:
-        printf("Starter: Division: Result Zero\n");
-        break;
-    case 1:
-        printf("Starter: Division: Result Positive\n");
-        break;
-    case 2:
-        printf("Starter: Division: Result Negative\n");
-        break;
-    case 3:
-        printf("Starter: Division: Result Undefined\n");
-        break;
-}
-}
-}
-else if (pid == -1)
-{
-printf("Starter: Child process creation failed. Exiting \n");
-}
-}
-}
-*/
+    //Check  for Usage.
+    if (argc > 2) {
+        printf("Too many arguments. \nUsage: Starter [NUMBER FILE] \nNumber file optional (Default: numbers.txt)\n"); 
+    }
     int numOp;
+    //Set default file.
     char *fileName = "numbers.txt";
-    if (argc > 1)
+    //Check for alternate numbers file.
+    if (argc == 2)
     {
         fileName = argv[1];
     }
+    //Create pipe.
     int fd[2];
     int result = pipe(fd);
     if (result == -1)
@@ -178,23 +33,29 @@ printf("Starter: Child process creation failed. Exiting \n");
         printf("[Starter]: Pipe creation failed! %s.\n", strerror(errNum));
         return 1;
     }
+    //put pipe write end address to buf.
     char buf[200];
     sprintf(buf, "%i", fd[1]);
+    //fork to FileReader.
     int pid = fork();
     if (pid == 0)
     {
+        //Close read end of pipe and then call FileReader which would write to pipe.
         close(fd[0]);
         execlp("./FileReader", "FileReader", fileName, buf, NULL);
     }
     else if (pid > 0)
     {
+        //Wait for FileReader to return.
         printf("Starter: forked process with ID [%i] \n", pid);
         printf("Starter: Pipe read end FD %i and pipe writer end FD %i.\n", fd[0], fd[1]);
         printf("Starter: waiting for process [%i] \n", pid);
         int waitStatus;
         wait(&waitStatus);
+        //Get number of operations from FileReader as return value.
         int result = WEXITSTATUS(waitStatus);
         numOp = result;
+        //Check for errors reported by FileReader.
         if (result == 0)
         {
             return 1;
@@ -203,14 +64,16 @@ printf("Starter: Child process creation failed. Exiting \n");
     }
     else
     {
+        //Produce error if forking fails.
         int errNum = errno;
         printf("Starter: Creating process ReadFile failed due to %s. Exiting \n", strerror(errNum));
         return 2;
     }
+    //close write end of pipe to allow for reading.
     close(fd[1]);
     char r[256] = "";
-    read(fd[0], r, sizeof(r)) ;
-    close(fd[0]);
+    read(fd[0], r, sizeof(r)) ;             //r contains contents of pipe.
+    close(fd[0]);                           //close read end of pipe as well.
     printf("Operations are %s\n\n", r);
     char a[12];
     char b[12];
@@ -220,14 +83,18 @@ printf("Starter: Child process creation failed. Exiting \n");
     int offset = 0;
     int j = 0;
     int cpid[numOp];
-    void *shmPtr;
+    void *shmPtr[numOp];
+    //read the contents of pipe in data (pointer to r) for the pattern, operation a b.
     while(sscanf(data,"%s %s %s %n", operation, a, b, &offset) == 3)
     {
+        //offset data to end of the first read.
         data += offset;
+        //create shared memory name.
         char s[10];
         sprintf(s, "%d", i++);
         char memName[12] = "Shared_mem";
         strcat(memName, s);
+        //create shared memory, set its size and create a void pointer to the address.
         int shm_fd = shm_open(memName, O_CREAT | O_RDWR, 0666);
         if (shm_fd == -1)
         {
@@ -240,10 +107,11 @@ printf("Starter: Child process creation failed. Exiting \n");
         if (result == -1)
         {
             int errNum = errno;
-            printf("Starter: Shared memory truncation failed. %s\n", strerror(errNum));
+            printf("Starter: Shared memory truncation failed. %s.\n", strerror(errNum));
             return 3;
         }
-        shmPtr = (int *)mmap(0, size, PROT_READ, MAP_SHARED, shm_fd, 0);
+        shmPtr[j] = (int *)mmap(0, size, PROT_READ, MAP_SHARED, shm_fd, 0);
+        //for for mathematical operations.
         cpid[j] = fork();
         if (cpid[j] == 0)
         {
@@ -252,30 +120,28 @@ printf("Starter: Child process creation failed. Exiting \n");
         else if (cpid[j] > 0)
         {
             printf("Starter: Forked process [%i] for %s operation.\n", cpid[j], operation);
-            printf("Starter: Name of shared memory is %s and FD is %i.\n", memName, shm_fd);
+            printf("Starter: Name of shared memory is %s and FD is %d.\n", memName, shm_fd);
             printf("Starter: waiting for process [%i].\n\n", cpid[j]);
             j++;
         }
-        else
+        else if (cpid[j] == -1)
         {
+            //Produce error if forking fails.
             printf("Starter: Child process creation failed. Exiting \n");
+            continue;
         }
     }
     for (int i = 0; i < numOp; i++) {
-        char *operation, *a, *b;
+        char answer[50];
         char s[10];
         sprintf(s, "%d", i);
         char memName[12] = "Shared_mem";
         strcat(memName, s);
         int waitstatus;
-        int returnpid = waitpid(cpid[i], &waitstatus, WCONTINUED);
-        char *res;
-        sscanf(shmPtr, "%[^\n]", res);
-        operation = strtok(res, " ");
-        a = strtok(NULL, " ");
-        b = strtok(NULL, " ");
-        res = strtok(NULL, " ");
-        printf("Starter: Child process [%i] of type %s operated on %s and %s and returned %s.\n\n", returnpid, operation, a, b, res);
+        int returnpid = waitpid(cpid[i], &waitstatus, WCONTINUED);               //wait for pid to return.
+        sscanf(shmPtr[i], "%s %s %s %s", operation, a, b, answer);              //read the shared memory and extract operation a b and answer.
+        //print the output to stdout.
+        printf("Starter: Child process [%i] of type %s operated on %s and %s and returned %s.\n\n", returnpid, operation, a, b, answer);
         shm_unlink(memName);
     }
 }

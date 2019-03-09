@@ -17,11 +17,12 @@ int main(int argc, char **argv)
 
     printf("Addition: Child Process [%d] \n\n", getpid());
     int sum = 0;
+    void *shmPtr;
     for (int i = 1; i < argc - 1; i++)
     {
         sum += atoi(argv[i]);
     }
-    int shm_fd = shm_open(argv[3], O_CREAT | O_RDWR, 0666);
+    int shm_fd = shm_open(argv[3], O_CREAT | O_RDWR, 066);
     if (shm_fd == -1)
     {
         int errNum = errno;
@@ -29,22 +30,11 @@ int main(int argc, char **argv)
         return 3;
     }
     int size = 256;
-    int result = ftruncate(shm_fd, size);
-    if (result == -1)
-    {
-        int errNum = errno;
-        printf("Addition: Shared memory truncation failed. %s\n", strerror(errNum));
-        return 3;
-    }
-    void *shmPtr = (int *)mmap(0, size, PROT_READ, MAP_SHARED, shm_fd, 0);
-    printf("returns0");
-    fflush(stdout);
+    shmPtr = mmap(0, size, PROT_WRITE, MAP_SHARED, shm_fd, 0);
     char *operation = argv[0];
     char *a = argv[1];
     char *b = argv[2];
     sprintf(shmPtr, "%s %s %s %d\n", operation, a, b, sum);
-    printf("returns");
-    fflush(stdout);
     shm_unlink(argv[3]);
     return 0;
 }

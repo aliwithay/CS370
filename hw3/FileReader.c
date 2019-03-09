@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     in = fopen(argv[1], "r");
     if (in == NULL)
     {
-        fprintf(stderr, "Can't open input file 'numbers.txt'!\n");
+        fprintf(stderr, "FileRead: Can't open input file '%s'!\n", argv[1]);
         return 0;
     }
     char str[50];

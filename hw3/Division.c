@@ -10,26 +10,36 @@
 int main(int argc, char **argv)
 {
     /* Extract numbers from the two dimensional array 'argv' and convert them to integers.
-   * Perform division on two numbers. 
-   * Print the name of the program along with the process Id.
-   * return status following the scheme given in the detailed assignment.
-  */
+     * Perform division on two numbers. 
+     * Print the name of the program along with the process Id.
+     * return status following the scheme given in the detailed assignment.
+     */
     printf("Division: Child Process [%d]\n\n", getpid());
-    int quo = atoi(argv[1]);
-    for (int i = 2; i < argc - 1; i++)
+    int shm_fd = shm_open(argv[3], O_CREAT | O_RDWR, 0666);
+    if (shm_fd == -1)
     {
-        quo /= atoi(argv[i]);
-    }
-int shm_fd = shm_open(argv[3], O_CREAT | O_RDWR, 0666);
-if (shm_fd == -1)
-{
         int errNum = errno;
         printf("Addition: Shared memory creation failed. %s!\n", strerror(errNum));
         return 3;
-}
-int size = 256;
-void *shmPtr = (int *)mmap(0, size, PROT_READ, MAP_SHARED, shm_fd, 0);
-sprintf(shmPtr, "%d", quo);
-shm_unlink(argv[3]);
-return 0;
+    }
+    int size = 256;
+    void *shmPtr;
+    shmPtr = mmap(0, size, PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    char *operation = argv[0];
+    char *a = argv[1];
+    char *b = argv[2];
+    char *undef = "undefined";
+    if (atoi(argv[2]) == 0) {
+        sprintf(shmPtr, "%s %s %s %s\n", operation, a, b, undef);
+        shm_unlink(argv[3]);
+    } else {
+        int quo = atoi(argv[1]);
+        for (int i = 2; i < argc - 1; i++)
+        {
+            quo /= atoi(argv[i]);
+        }
+        sprintf(shmPtr, "%s %s %s %d\n", operation, a, b, quo);
+        shm_unlink(argv[3]);
+    }
+    return 0;
 }
