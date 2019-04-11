@@ -150,6 +150,10 @@ def rr(processlist, tquantum):
     print("Throughput: " + str(throughput))
 
 
+if len(sys.argv) < 3:
+    print("Not enough arguments!")
+    print("USAGE: python scheduler.py [filename.csv] [time quantum]")
+    sys.exit()
 inputFile = open(sys.argv[1], 'r')
 quantum = int(sys.argv[2])
 processor = []
